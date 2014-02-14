@@ -3,50 +3,130 @@
 		this.container = $('<div id="mole-attack"><div id="stage"></div></div>');
 		this.stage = this.container.find('#stage');
 		this.holes = [];
-		this.leavel = 1;
+		this.leavel = 0;
+		this.score = 0;
+		this.scorePerMouse = 100;
+		this.timeLeft = 60;
+		this.timer = null;
+		this.mouseTimer = null;
+		this.minMouseNum = 1;
+		this.maxMouseNum = 4;
 		return this.init();
 	};
 	MoleAttack.prototype = {
 		init: function() {
+			var self = this;
 			$(document.body).append(this.container);
-			this.holes.push(new Hole(this.stage, 90, 60, 135, this.hit));
-			this.holes.push(new Hole(this.stage, 90, 200, 130, this.hit));
-			this.holes.push(new Hole(this.stage, 90, 350, 140, this.hit));
-			this.holes.push(new Hole(this.stage, 90, 500, 135, this.hit));
-			this.holes.push(new Hole(this.stage, 90, 650, 130, this.hit));
-
-			this.holes.push(new Hole(this.stage, 135, 80, 270, this.hit));
-			this.holes.push(new Hole(this.stage, 135, 250, 260, this.hit));
-			this.holes.push(new Hole(this.stage, 135, 430, 275, this.hit));
-			this.holes.push(new Hole(this.stage, 135, 610, 260, this.hit));
-
-			this.holes.push(new Hole(this.stage, 170, 120, 395, this.hit));
-			this.holes.push(new Hole(this.stage, 170, 320, 400, this.hit));
-			this.holes.push(new Hole(this.stage, 170, 520, 390, this.hit));
+			// 第一排
+			this.holes.push(new Hole(this.stage, 90, 60, 135, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 90, 200, 130, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 90, 350, 140, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 90, 500, 135, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 90, 650, 130, function() {
+				self.hit();
+			}));
+			//第二排
+			this.holes.push(new Hole(this.stage, 135, 80, 270, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 135, 250, 260, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 135, 430, 275, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 135, 610, 260, function() {
+				self.hit();
+			}));
+			//第三排
+			this.holes.push(new Hole(this.stage, 170, 120, 395, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 170, 320, 400, function() {
+				self.hit();
+			}));
+			this.holes.push(new Hole(this.stage, 170, 520, 390, function() {
+				self.hit();
+			}));
 		},
 		start: function() {
 			var self = this;
-			var hNum = this.holes.length;
-			var max = this.leavel + 1 > hNum / 2 ? hNum / 2 : this.leavel + 1;
-			var speed = 3000 / (this.leavel + 1);
-			setInterval(function() {
-				var mNum = Utils.random(1, max);
+			var speed = this.getIntervalSpeed();
+			var hideSpeed = this.getHideSpeed();
+			this.mouseTimer = setInterval(function() {
+				var mouseNum = Utils.random(self.minMouseNum, self.maxMouseNum);
 				var shown = [];
-				while (mNum > 0) {
-					var current = Utils.random(0, hNum - 1);
-					if (shown.indexOf(current) < 0) {
-						mNum--;
-						shown.push(current);
+				while (mouseNum > 0) {
+					var current = Utils.random(0, self.holes.length - 1);
+					if (shown.indexOf(current) < 0 && !self.holes[current].isShown) {
+						mouseNum--;
 						var hole = self.holes[current];
 						hole.show();
 						setTimeout(function() {
 							hole.hide();
-						}, speed);
+						}, hideSpeed);
 					}
 				}
 			}, speed);
+			//计时
+			this.timer = setInterval(function() {
+				self.timeLeft--;
+				self.updateData();
+				if (self.timeLeft <= 0) {
+					self.gameOver();
+				}
+			}, 1000);
 		},
-		hit: function() {}
+		getIntervalSpeed: function() {
+			var speed = 5000;
+			speed = (speed - this.leavel * 500) >= 1000 ? (speed - this.leavel * 500) : speed / this.leavel;
+			return speed;
+		},
+		getHideSpeed: function() {
+			var speed = 3000;
+			speed = (speed - this.leavel * 500) >= 1000 ? (speed - this.leavel * 500) : speed / this.leavel;
+			return speed;
+		},
+		updateData: function() {
+			console.log(this.timeLeft);
+			console.log(this.score);
+		},
+		hit: function() {
+			this.score += this.scorePerMouse;
+			this.updateData();
+			this.upgrade();
+		},
+		upgrade: function() {
+			if (this.score >= (2400 + this.leavel * this.leavel * 100)) {
+				//升级，清空准备进入下级游戏
+				this.score = 0;
+				this.leavel++;
+				for (var i = 0, size = this.holes.length; i < size; i++) {
+					this.holes[i].reset();
+				}
+				if (this.timer) clearInterval(this.timer);
+				if (this.mouseTimer) clearInterval(this.mouseTimer);
+				this.updateData();
+				if (confirm('是否进行下一关游戏？')) {
+					this.start();
+				}
+			}
+		},
+		gameOver: function() {
+			for (var i = 0, size = this.holes.length; i < size; i++) {
+				this.holes[i].reset();
+			}
+			if (this.timer) clearInterval(this.timer);
+			if (this.mouseTimer) clearInterval(this.mouseTimer);
+		}
 	};
 
 	function Hole(parent, width, left, top, cb) {
@@ -61,6 +141,7 @@
 		this.width = width;
 		this.left = left;
 		this.top = top;
+		this.isShown = false;
 		this.isHit = false;
 		return this.init();
 	};
@@ -117,19 +198,19 @@
 			var self = this;
 			this.nMouse.hide();
 			this.showHit();
+			self.cb.call();
 			setTimeout(function() {
 				self.hide();
-				self.cb.call();
 			}, 1000);
 		}
 	}
 	var Utils = {
-		random: function(under, over) {
+		random: function(min, max) {
 			switch (arguments.length) {
 				case 1:
-					return parseInt(Math.random() * under + 1);
+					return parseInt(Math.random() * min + 1);
 				case 2:
-					return parseInt(Math.random() * (over - under + 1) + under);
+					return parseInt(Math.random() * (max - min + 1) + min);
 				default:
 					return 0;
 			}
