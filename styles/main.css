@@ -1,0 +1,86 @@
+/*mole attack*/
+#mole-attack{
+	position: absolute;
+	width: 1006px;
+	height: 606px;
+	top: 50%;
+	left: 50%;
+	margin-top: -303px;
+	margin-left: -503px;
+	background: #ccc;
+	box-shadow: 2px 2px 10px #666, -2px 2px 5px #aaa;
+}
+/*stage*/
+#stage{
+	position: absolute;
+	width: 800px;
+	height: 600px;
+	left:3px;
+	top: 3px;
+	background: url('../resources/stage.png') no-repeat;
+	background-size: 100%;
+	cursor: url('../resources/cursor-normal.ico'),url('../resources/cursor-normal.png'),pointer;
+}
+#stage.hit{
+	cursor: url('../resources/cursor-hit.ico'),url('../resources/cursor-hit.png'),pointer;
+}
+/*tools*/
+#tools{
+	position: absolute;
+	width: 200px;
+	right: 3px;
+	top: 3px;
+	height: 600px;
+	background: #fefefe;
+}
+/*hole*/
+.hole{
+	width: 210px;
+	height: 95px;
+	position: absolute;
+	top: 200px;
+}
+.hole .hole-top{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 58.94736842105263%;
+	background: url('../resources/hole-top.png') no-repeat;
+	background-size: 100% 100%;
+}
+.hole .mouse-container{
+	overflow: hidden;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 300%;
+}
+.hole .mouse-normal{
+	bottom: 10.52631578947368%; /*shown*/
+	/*bottom:-56.14035087719298%;*/ /*hidden*/
+	position: absolute;
+	width: 100%;
+	height: 70.17543859649123%;
+	background: url('../resources/mouse-normal.png') no-repeat;
+	background-size: 100% 100%;
+}
+.hole .mouse-hit{
+	bottom: 10.52631578947368%; /*shown*/
+	bottom:-56.14035087719298%; /*hidden*/
+	position: absolute;
+	width: 100%;
+	height: 70.17543859649123%;
+	background: url('../resources/mouse-hit.png') no-repeat;
+	background-size: 100% 100%;
+}
+.hole .hole-bottom{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 72.63157894736842%;
+	background: url('../resources/hole-bottom.png') no-repeat;
+	background-size: 100% 100%;
+}
